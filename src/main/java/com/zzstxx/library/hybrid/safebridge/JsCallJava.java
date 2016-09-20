@@ -31,7 +31,7 @@ public class JsCallJava
                 throw new Exception("injected name can not be null");
             }
             mInjectedName = injectedName;
-            mMethodsMap = new HashMap<String, Method>();
+            mMethodsMap = new HashMap<>();
             //获取自身声明的所有方法（包括public private protected）， getMethods会获得所有继承与非继承的方法
             Method[] methods = injectedCls.getDeclaredMethods();
             StringBuilder sb = new StringBuilder("javascript:(function(b){console.log(\"");

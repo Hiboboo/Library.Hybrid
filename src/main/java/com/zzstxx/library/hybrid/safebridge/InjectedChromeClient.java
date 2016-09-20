@@ -15,6 +15,8 @@ public class InjectedChromeClient extends WebChromeClient
     private JsCallJava mJsCallJava;
     private boolean mIsInjectedJS;
 
+    public static final String INJECTEDNAME = "HostApp";
+
     public InjectedChromeClient(String injectedName, Class injectedCls)
     {
         mJsCallJava = new JsCallJava(injectedName, injectedCls);

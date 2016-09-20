@@ -1,4 +1,8 @@
-<resources>
-    <string name="confirm">确定</string>
-    <string name="cancel">取消</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="confirm" tools:ignore="ResourceName">确定</string>
+    <string name="cancel" tools:ignore="ResourceName">取消</string>
+    <string name="notfound_userinfo" tools:ignore="ResourceName">没有可用的用户信息</string>
+    <string name="notfound_baserequesturl" tools:ignore="ResourceName">没有可用的服务器地址</string>
+    <string name="actionbar_item_refresh" tools:ignore="ResourceName">重新加载</string>
+    <string name="alert_permission_apply_message" tools:ignore="ResourceName">请允许应用程序访问您的资源文件管理器</string>
 </resources>
