@@ -1,0 +1,319 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>郑州索特信息有限公司</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1, target-densitydpi=medium-dpi, user-scalable=no">
+    <meta property="og:site_name" content="郑州索特信息有限公司"/>
+    <script src="file:///android_asset/zepto.js" type="text/javascript">
+    </script>
+    <style>
+        .entry{
+        -webkit-padding-start: 30px;
+        }
+        .entry li {
+        line-height: 29px;
+        margin-left: -10px;
+        }
+        .entry li div{
+        margin-right: 10px;
+        padding-left: 8px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        background: #222222;
+        color: white;
+        word-break: break-all;
+        -ms-word-wrap: break-word;
+        word-wrap: break-word;
+        line-height: 15px;
+        font-size: 10pt;
+        }
+        .entry li button{
+        margin-top: 5px;
+        width: 60px;
+        height: 35px;
+        color: #111111;
+        }
+    </style>
+</head>
+
+<body>
+<div class="blog-header">
+    <h3>Java Interface 可用接口列表测试</h3>
+</div>
+<ul class="entry">
+    <li>
+        <b>弹出提示框</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.showToast('我是消息提示框');
+        </div>
+        <button onclick="HostApp.showToast('我是消息提示框');">测试</button>
+    </li>
+    <br/>
+    <li>
+        <b>显示一个带有确认/取消按钮的消息提示框</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.showAlertDialog('消息提示', '这是一个带有确认/取消按钮的消息提示对话框',
+            function(){HostApp.showToast('响应了确认事件');});
+        </div>
+        <button onclick="HostApp.showAlertDialog('消息提示', '这是一个带有确认按钮的消息提示对话框', function(){HostApp.showToast('响应了确认事件');});">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>显示一个只带有确认按钮的消息提示框</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.showAlertDialogForSingleBut('消息提示', '这是一个带有确认/取消按钮的消息提示对话框',
+            function(){HostApp.showToast('响应了确认事件');});
+        </div>
+        <button onclick="HostApp.showAlertDialogForSingleBut('消息提示', '这是一个带有确认按钮的消息提示对话框', function(){HostApp.showToast('响应了确认事件');});">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>显示一个进度提示对话框</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.showProgressDialog('正在拼命为您搬运数据中..', false);
+        </div>
+        <button onclick="HostApp.showProgressDialog('正在拼命为您搬运数据中..', false);">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>销毁一个正在显示中的进度提示对话框</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.dismissProgressDialog();
+        </div>
+        <button onclick="HostApp.dismissProgressDialog();">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>显示一个只带有多个选项的消息提示框</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.showAlertDialogForItems('附件选择', '相机拍照,相册选择,文件浏览', function getItem(item, position){});
+        </div>
+        <button onclick="HostApp.showAlertDialogForItems('附件选择', '相机拍照,相册选择,文件浏览', function getItem(item, position){
+            document.getElementById('click_item').innerHTML=item+position;
+        });">
+            测试
+        </button>
+        <p id="click_item">***********</p>
+    </li>
+    <br/>
+    <li>
+        <b>显示一个只带有多个并且可以切换选项卡的消息提示框</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.showTabsDialog('http://www.baidu.com, http://www.zzedu.net.cn', '百度, 教育信息网');
+        </div>
+        <button onclick="HostApp.showTabsDialog('http://www.baidu.com, file:///android_asset/api.html', '百度, 测试页面');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>打开新页面</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.openNewpage('com.zzstxx.dc.parent.actions.NewShowActivity', '这是一个新页面',
+            'http://www.baidu.com');
+        </div>
+        <button onclick="HostApp.openNewpage('com.zzstxx.hybrid.actions.NewPageActivity', '这是一个新页面', 'file:///android_asset/api.html');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>打开不用传类名的新页面</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.openNotclsNewpage('这是一个不需要传入类名就可以打开的新页面', 'http://www.baidu.com');
+        </div>
+        <button onclick="HostApp.openNotclsNewpage('这是一个不需要传入类名就可以打开的新页面', 'http://www.baidu.com');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>打开可以播放视频的新页面</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.openVideoPlayerPage('这是一个视频播放页', 'http://iclass.zzedu.net.cn/event.jsp?do=zyShow&id=5096');
+        </div>
+        <button onclick="HostApp.openVideoPlayerPage('这是一个视频播放页',
+        'http://iclass.zzedu.net.cn/event.jsp?do=zyShow&id=5096');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>打开带有自定义参数的新页面</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.openNewpage('com.zzstxx.dc.parent.actions.NewShowActivity', '这是一个带有自定义参数的新页面',
+            'http://www.baidu.com', '这是自定义参数');
+        </div>
+        <button onclick="HostApp.openNewpage('com.zzstxx.hybrid.actions.NewPageActivity', '这是一个带有自定义参数的新页面', 'file:///android_asset/api.html', '这是自定义参数');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>刷新当前页面</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.refreshCurrentPage('http://iclass.zzedu.net.cn/event.jsp?do=zyShow&id=5096');
+        </div>
+        <button onclick="HostApp.refreshCurrentPage('http://iclass.zzedu.net.cn/event.jsp?do=zyShow&id=5096');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>回退至上一级页面并关闭当前页</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.goBackBeforePage();
+        </div>
+        <button onclick="HostApp.goBackBeforePage();">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>关闭当前页并回到首页</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.goHomePage("com.zzstxx.hybrid.actions.MainActivity");
+        </div>
+        <button onclick="HostApp.goHomePage('com.zzstxx.hybrid.actions.MainActivity');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>清除当前页面Cookies</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.clearCookies();
+        </div>
+        <button onclick="HostApp.clearCookies();">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>获取当前设备的IMEI号码</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.getDeviceIMEI();
+        </div>
+        <button onclick="HostApp.showAlertDialog('设备的IMEI号', HostApp.getDeviceIMEI(), function(){});">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>设置当前已登录用户的信息</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.setUserInfo('登录信息，JSON字符串');
+        </div>
+        <button onclick="HostApp.setUserInfo('登录信息，JSON字符串');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>获取当前登录用户的信息</b><br/>
+        代码：<br/>
+        <div>
+            var userinfo = HostApp.getCurrentUserInfo();
+        </div>
+        <button onclick="HostApp.showAlertDialogForSingleBut('个人信息', HostApp.getCurrentUserInfo(), function(){});">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
+        <b>打开本地设备相机并获取照片拍摄后的绝对路径</b><br/>
+        <i>注意：参数filesInfo为标准JSON数组</i><br/>
+        返回结果样板：<br/>
+        [{'name':'IMG_-1198173822.jpg','size':2964508,'path':'/storage/emulated/0/DCIM/IMG_-1198173822.jpg'}]
+        代码：<br/>
+        <div>
+            HostApp.openCamera(function getFiles(filesInfo){});
+        </div>
+        <button onclick="HostApp.openCamera(function getFiles(filesInfo){
+           document.getElementById('camear_photo').innerHTML=filesInfo;
+        });">
+            测试
+        </button>
+        <p id="camear_photo">***********</p>
+    </li>
+    <br/>
+    <li>
+        <b>打开本地设备相册并获取被选择的某张照片绝对路径</b><br/>
+        <i>注意：参数filesInfo为标准JSON数组</i><br/>
+        返回结果样板：<br/>
+        [{'name':'IMG_-1198173822.jpg','size':2964508,'path':'/storage/emulated/0/DCIM/IMG_-1198173822.jpg'}]
+        代码：<br/>
+        <div>
+            HostApp.openAlbum(function getFiles(filesInfo){});
+        </div>
+        <button onclick="HostApp.openAlbum(function getFiles(filesInfo){
+           document.getElementById('album_photo').innerHTML=filesInfo;
+        });">
+            测试
+        </button>
+        <p id="album_photo">***********</p>
+    </li>
+    <br/>
+    <li>
+        <b>打开本地文件管理器并获取已选择文件的绝对路径</b><br/>
+        <i>注意：参数filesInfo为标准JSON数组</i><br/>
+        返回结果样板：<br/>
+        [{'name':'IMG_-1198173822.jpg','size':2964508,'path':'/storage/emulated/0/DCIM/IMG_-1198173822.jpg'}]
+        代码：<br/>
+        <div>
+            HostApp.openFilePicker(function getFiles(filesInfo){});
+        </div>
+        <button onclick="HostApp.openFilePicker(function getFiles(filesInfo){
+            document.getElementById('filepicker').innerHTML=filesInfo;
+        });">
+            测试
+        </button>
+        <p id="filepicker">***********</p>
+    </li>
+    <br/>
+    <li>
+        <b>上传文件</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.uploadFiles(function uploadFile(response){}, true, "正在上传表单文件，稍后..", "mobile/parent/uploadhomework.json", "{id: 2323424, account: gly}", "/sdcard/333.jpg,/sdcard/555.png");
+        </div>
+        <button onclick="HostApp.uploadFiles(function uploadFile(response){
+            HostApp.showToast(response);
+        }, true, '正在上传表单文件，稍后..', 'http://192.168.0.66/mobile/repair/uploadfile.json',
+        '{id:fecedea5-8a91-4cc8-8233-3af0bad3f021,userid:8a8085374d961134014d961ddced0024,username:3,unitid:402880b74e7def79014e7f448658001c,userAccount:3,truename:刘荟,code:103632,clienttype:3}',
+        '/storage/emulated/0/zzstxx/teacher/photos/IMG20160930091503.jpg');">
+            测试
+        </button>
+        <p id="uploadresult">***********</p>
+    </li>
+</ul>
+
+</body>
+</html>

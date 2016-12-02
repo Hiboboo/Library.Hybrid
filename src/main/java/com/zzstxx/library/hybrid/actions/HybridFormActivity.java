@@ -10,12 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.Toast;
 
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 import com.zzstxx.library.hybrid.R;
 import com.zzstxx.library.hybrid.safebridge.InjectedChromeClient;
 import com.zzstxx.library.hybrid.safebridge.JsCallback;
+import com.zzstxx.library.hybrid.util.ActivityManager;
 import com.zzstxx.library.hybrid.util.HostJsScope;
 import com.zzstxx.library.hybrid.views.ProgressWebView;
 
@@ -50,6 +53,7 @@ public class HybridFormActivity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        ActivityManager.addActivity(this);
         this.setContentView(R.layout.activity_newpage_layout);
         Toolbar mToolbar = (Toolbar) this.findViewById(R.id.toolbar);
         this.setSupportActionBar(mToolbar);
@@ -92,6 +96,14 @@ public class HybridFormActivity extends AppCompatActivity
     void OnExternalStoragePermissionDenied()
     {
         Toast.makeText(this, R.string.alert_permission_apply_message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        ActivityManager.removeActivity(this);
+        mWebView.clearCacheCookie();
     }
 
     private int index = 0;

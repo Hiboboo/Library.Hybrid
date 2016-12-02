@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="ResourceName">
+    <include layout="@layout/toolbar_layout"/>
+    <com.zzstxx.library.hybrid.views.ProgressWebView
+        android:id="@+id/video_webview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layerType="hardware"
+        android:scrollbars="none"
+        android:splitMotionEvents="false"/>
+</LinearLayout>

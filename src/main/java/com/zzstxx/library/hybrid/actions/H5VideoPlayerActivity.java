@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 
 import com.zzstxx.library.hybrid.R;
 import com.zzstxx.library.hybrid.util.ActivityManager;
@@ -16,13 +17,13 @@ import com.zzstxx.library.hybrid.views.ProgressWebView;
 /**
  * 作者：孙博
  * <br>
- * 创建时间：Hiboboo on 2016/9/18.
+ * 创建时间：Hiboboo on 2016/12/2.
  * <br>
- * 描述：一个新的混合显示页面，子类可以直接继承并处理复杂的业务逻辑。另：子类无须重写{@link #setContentView(int)}方法
+ * 描述：带有H5播放器的页面
  * <br>
- * 版本：v1.3
+ * 版本：
  */
-public class HybridNewActivity extends AppCompatActivity
+public class H5VideoPlayerActivity extends AppCompatActivity
 {
     private ProgressWebView mWebView;
 
@@ -31,13 +32,14 @@ public class HybridNewActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         ActivityManager.addActivity(this);
-        this.setContentView(R.layout.activity_newpage_layout);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED);
+        this.setContentView(R.layout.activity_h5_video_player_layout);
         Toolbar mToolbar = (Toolbar) this.findViewById(R.id.toolbar);
         this.setSupportActionBar(mToolbar);
         ActionBar mActionbar = getSupportActionBar();
         if (mActionbar != null)
             mActionbar.setDisplayHomeAsUpEnabled(true);
-        mWebView = (ProgressWebView) this.findViewById(R.id.webview);
+        mWebView = (ProgressWebView) this.findViewById(R.id.video_webview);
         String title = getIntent().getStringExtra(HostJsScope.ExtraKey.KEY_TOOLBAR_TITLE);
         String url = getIntent().getStringExtra(HostJsScope.ExtraKey.KEY_TOOLBAR_URL);
         if (url != null)
@@ -51,11 +53,27 @@ public class HybridNewActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume()
+    {
+        super.onResume();
+        mWebView.onResume();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        mWebView.onPause();
+    }
+
+    @Override
     protected void onDestroy()
     {
         super.onDestroy();
         ActivityManager.removeActivity(this);
         mWebView.clearCacheCookie();
+        mWebView.stopLoading();
+        mWebView.destroy();
     }
 
     @Override

@@ -10,11 +10,12 @@
         android:supportsRtl="true">
         <activity
             android:name=".actions.HybridNewActivity"
-            android:screenOrientation="portrait"
             android:hardwareAccelerated="false"/>
         <activity
+            android:name=".actions.H5VideoPlayerActivity"
+            android:hardwareAccelerated="true"/>
+        <activity
             android:name=".actions.HybridFormActivity"
-            android:screenOrientation="portrait"
             android:hardwareAccelerated="false"/>
     </application>
 

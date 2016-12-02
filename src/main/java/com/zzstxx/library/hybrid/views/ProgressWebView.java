@@ -69,8 +69,22 @@ public class ProgressWebView extends WebView
         setting.setDefaultTextEncodingName("UTF-8");
         // 设置加载进来的页面自适应手机屏幕
         setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
-        setting.setCacheMode(WebSettings.LOAD_DEFAULT);
         this.setWebChromeClient(new EvWebChromeClient(InjectedChromeClient.INJECTEDNAME, HostJsScope.class));
+    }
+
+    /**
+     * 设置浏览器的缓存策略
+     *
+     * @param mode 缓存策略
+     * @see WebSettings#LOAD_CACHE_ELSE_NETWORK
+     * @see WebSettings#LOAD_CACHE_ONLY
+     * @see WebSettings#LOAD_DEFAULT
+     * @see WebSettings#LOAD_NO_CACHE
+     */
+    public void setCacheMode(int mode)
+    {
+        WebSettings setting = this.getSettings();
+        setting.setCacheMode(mode);
     }
 
     int dp2px(Context context, int dp)
@@ -79,12 +93,26 @@ public class ProgressWebView extends WebView
                 .getResources().getDisplayMetrics());
     }
 
-    private EvWebViewClient mWebClicnet;
+    private WebViewClient mWebClicnet;
+
+    public void setWebViewClient(WebViewClient client)
+    {
+        mWebClicnet = client;
+    }
 
     public void setWebViewClient(String url)
     {
         mWebClicnet = new EvWebViewClient(url);
         this.setWebViewClient(mWebClicnet);
+    }
+
+    /**
+     * 清除本地缓存及Cookie
+     */
+    public void clearCacheCookie()
+    {
+        this.clearCache(true);
+        HostJsScope.clearCookies(this);
     }
 
     public WebViewClient getWebClient()

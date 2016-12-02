@@ -6,9 +6,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 import android.widget.Toast;
 
@@ -16,10 +25,14 @@ import com.nbsp.materialfilepicker.MaterialFilePicker;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.builder.PostFormBuilder;
 import com.zhy.http.okhttp.callback.StringCallback;
+import com.zhy.http.okhttp.request.RequestCall;
 import com.zzstxx.library.hybrid.R;
+import com.zzstxx.library.hybrid.actions.H5VideoPlayerActivity;
 import com.zzstxx.library.hybrid.actions.HybridFormActivity;
 import com.zzstxx.library.hybrid.actions.HybridNewActivity;
 import com.zzstxx.library.hybrid.safebridge.JsCallback;
+import com.zzstxx.library.hybrid.views.HybridTabsDialog;
+import com.zzstxx.library.hybrid.views.ProgressDialogFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,6 +99,42 @@ public class HostJsScope
         });
         builder.setCancelable(false);
         builder.create().show();
+    }
+
+    /**
+     * 显示一个用于进度提示的消息提示对话框
+     *
+     * @param webView    浏览器
+     * @param message    文字消息
+     * @param cancelable 是否允许触摸对话框以外的其他区域来关闭对话框
+     */
+    public static void showProgressDialog(WebView webView, String message, boolean cancelable)
+    {
+        Context context = webView.getContext();
+        if (context instanceof FragmentActivity)
+        {
+            FragmentActivity activity = (FragmentActivity) context;
+            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+            ProgressDialogFragment dialog = ProgressDialogFragment.newInstance(message, cancelable);
+            dialog.show(transaction, "progress.dialog");
+        }
+    }
+
+    /**
+     * 销毁一个正在显示中的进度对话框
+     *
+     * @param webView 浏览器
+     */
+    public static void dismissProgressDialog(WebView webView)
+    {
+        Context context = webView.getContext();
+        if (context instanceof FragmentActivity)
+        {
+            FragmentActivity activity = (FragmentActivity) context;
+            Fragment fragment = activity.getSupportFragmentManager().findFragmentByTag("progress.dialog");
+            if (fragment instanceof DialogFragment)
+                ((DialogFragment) fragment).dismiss();
+        }
     }
 
     /**
@@ -162,6 +211,35 @@ public class HostJsScope
     }
 
     /**
+     * 先是一个带有选项卡并且可以切换的对话框
+     *
+     * @param webView 浏览器
+     * @param urls    每个选项卡对应的页面要显示的URL源链接合集
+     * @param tabs    选项卡名称合集，并与参数urls的数量必须要保持一一对应
+     * @throws Exception 当对话框创建失败，抛出该异常
+     */
+    public static void showTabsDialog(WebView webView, String urls, String tabs) throws Exception
+    {
+        Context context = webView.getContext();
+        if (context instanceof AppCompatActivity)
+        {
+            AppCompatActivity compatActivity = (AppCompatActivity) context;
+            Bundle data = new Bundle();
+            data.putStringArray(HybridTabsDialog.KEY_TAB_TITLES, tabs.split(","));
+            data.putStringArray(HybridTabsDialog.KEY_TAB_URLS, urls.split(","));
+            FragmentManager manager = compatActivity.getSupportFragmentManager();
+            FragmentTransaction transaction = manager.beginTransaction();
+            Fragment fragment = manager.findFragmentByTag("hybrid.tabs.dialog");
+            if (fragment != null)
+                transaction.remove(fragment);
+            HybridTabsDialog dialog = HybridTabsDialog.newInstance(data);
+            dialog.setCancelable(true);
+            dialog.show(transaction, "hybrid.tabs.dialog");
+        } else
+            throw new Exception("基类没有继承AppCompatActivity！");
+    }
+
+    /**
      * 打开一个新页面
      *
      * @param webView     浏览器对象
@@ -202,6 +280,22 @@ public class HostJsScope
         intent.putExtra(ExtraKey.KEY_TOOLBAR_URL, url);
         if (params != null)
             intent.putExtra(ExtraKey.KEY_TOOLBAR_PARAMS, params);
+        context.startActivity(intent);
+    }
+
+    /**
+     * 打开一个专用于视频播放的页面
+     *
+     * @param webView 浏览器
+     * @param title   页面标题
+     * @param url     要打开的链接
+     */
+    public static void openVideoPlayerPage(WebView webView, String title, String url)
+    {
+        Context context = webView.getContext();
+        Intent intent = new Intent(context, H5VideoPlayerActivity.class);
+        intent.putExtra(ExtraKey.KEY_TOOLBAR_TITLE, title);
+        intent.putExtra(ExtraKey.KEY_TOOLBAR_URL, url);
         context.startActivity(intent);
     }
 
@@ -267,19 +361,87 @@ public class HostJsScope
         }
     }
 
+    public static void refreshCurrentPage(WebView webView, String newUrl)
+    {
+        webView.loadUrl(newUrl);
+    }
+
+    /**
+     * 回退至上一个页面并关闭当前页
+     *
+     * @param webView 浏览器
+     */
+    public static void goBackBeforePage(WebView webView)
+    {
+        Context context = webView.getContext();
+        if (context instanceof Activity)
+            ((Activity) context).finish();
+    }
+
+    /**
+     * 返回至程序首页
+     *
+     * @param webView 浏览器
+     */
+    public static void goHomePage(WebView webView)
+    {
+        ActivityManager.finishActivitys();
+    }
+
+    /**
+     * 获取当前登录用户的基本信息
+     *
+     * @param webView 浏览器
+     * @return 返回保存在本地的用户登录信息，以JSON字符串的形式返回
+     */
+    public static String getCurrentUserInfo(WebView webView)
+    {
+        Context context = webView.getContext();
+        return getCurrentUserInfo(context);
+    }
+
+    /**
+     * 获取当前登录用户的基本信息
+     *
+     * @param context 应用上下文
+     * @return 返回保存在本地的用户登录信息，以JSON字符串的形式返回
+     */
+    public static String getCurrentUserInfo(Context context)
+    {
+        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return mPreferences.getString("com.zzstxx.library.hybrid.USERINFO", "null");
+    }
+
     /**
      * 获取当前登录用户的基本信息
      *
      * @param webView    浏览器对象
      * @param jsCallback 结果回传
+     * @see #getCurrentUserInfo(WebView)
      */
-    public static void getCurrentUserInfo(WebView webView, JsCallback jsCallback) throws JsCallback.JsCallbackException
+    @Deprecated
+    public static void getCurrentUserInfo(WebView webView, JsCallback jsCallback)
+    {
+        String userinfo = getCurrentUserInfo(webView);
+        try
+        {
+            jsCallback.onClickCallback(userinfo);
+        } catch (JsCallback.JsCallbackException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 设置已登录用户的基本信息
+     *
+     * @param webView  浏览器
+     * @param userinfo 登录成功后的用户信息
+     */
+    public static void setUserInfo(WebView webView, String userinfo)
     {
         Context context = webView.getContext();
-        SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String message = context.getResources().getString(R.string.notfound_userinfo);
-        String userinfo = mPreferences.getString("com.zzstxx.library.hybrid.USERINFO", message);
-        jsCallback.onClickCallback(userinfo);
+        setUserInfo(context, userinfo);
     }
 
     /**
@@ -316,6 +478,29 @@ public class HostJsScope
         SharedPreferences mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String message = context.getResources().getString(R.string.notfound_baserequesturl);
         return mPreferences.getString("com.zzstxx.library.hybrid.BASEREQUESTURL", message);
+    }
+
+    /**
+     * 清除浏览器Cookie
+     *
+     * @param webView 浏览器
+     */
+    public static void clearCookies(WebView webView)
+    {
+        clearCookies(webView.getContext());
+    }
+
+    /**
+     * 清除浏览器Cookie
+     *
+     * @param context 上下文引用
+     */
+    public static void clearCookies(Context context)
+    {
+        CookieSyncManager.createInstance(context);
+        CookieManager manager = CookieManager.getInstance();
+        manager.removeAllCookie();
+        CookieSyncManager.getInstance().sync();
     }
 
     /**
@@ -463,9 +648,10 @@ public class HostJsScope
      * @param params         上传文件所需的参数集合（JSON对象字符串，不含file）
      * @param files          要上传的文件集合
      */
-    public static void uploadFiles(WebView webView, final JsCallback jsCallback, boolean isShowProgress, String message, String url, String params, String files)
+    public static void uploadFiles(WebView webView, JsCallback jsCallback, boolean isShowProgress, String message, String url, String params, String files)
     {
         final Context context = webView.getContext();
+        final JsCallback mJsCallback = jsCallback;
         final ProgressDialog mProgressDialog = new ProgressDialog(context);
         if (isShowProgress)
         {
@@ -474,7 +660,6 @@ public class HostJsScope
             mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }
-        String requestUrl = getBaseRequestUrl(webView).concat(url);
         try
         {
             PostFormBuilder mPostBuilder = OkHttpUtils.post();
@@ -490,8 +675,14 @@ public class HostJsScope
                 File file = new File(path);
                 mPostBuilder.addFile("file", file.getName(), file);
             }
-            mPostBuilder.url(requestUrl);
-            mPostBuilder.build().connTimeOut(60 * 1000).execute(new StringCallback()
+            if (url.startsWith("http://") || url.startsWith("https://"))
+                mPostBuilder.url(url);
+            else
+                mPostBuilder.url(getBaseRequestUrl(webView).concat(url));
+            long timeout = 2 * 60 * 1000;
+            RequestCall requestCall = mPostBuilder.build();
+            requestCall.connTimeOut(timeout);
+            requestCall.execute(new StringCallback()
             {
                 @Override
                 public void onError(Call call, Exception e, int id)
@@ -500,7 +691,7 @@ public class HostJsScope
                     {
                         if (mProgressDialog.isShowing())
                             mProgressDialog.dismiss();
-                        jsCallback.onClickCallback(e.getMessage());
+                        mJsCallback.onClickCallback(e.getMessage());
                     } catch (JsCallback.JsCallbackException e1)
                     {
                         e1.printStackTrace();
@@ -514,7 +705,7 @@ public class HostJsScope
                     {
                         if (mProgressDialog.isShowing())
                             mProgressDialog.dismiss();
-                        jsCallback.onClickCallback(response);
+                        mJsCallback.onClickCallback(response);
                     } catch (JsCallback.JsCallbackException e1)
                     {
                         e1.printStackTrace();
