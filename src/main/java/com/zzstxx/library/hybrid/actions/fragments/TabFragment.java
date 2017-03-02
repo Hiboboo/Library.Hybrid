@@ -40,6 +40,6 @@ public class TabFragment extends Fragment
         if (!url.startsWith("http://") && !url.startsWith("https://"))
             url = HostJsScope.getBaseRequestUrl(mWebView).concat(url);
         mWebView.loadUrl(url);
-        mWebView.setWebViewClient(url);
+        mWebView.setWebViewClientUrl(url);
     }
 }

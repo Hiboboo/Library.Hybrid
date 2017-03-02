@@ -3,16 +3,16 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'android-apt'
 
-version = "2.7"
+version = "3.3"
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
     resourcePrefix "library.hybrid__"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 14
         versionName version
     }
@@ -37,7 +37,7 @@ tasks.withType(JavaCompile) {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.1.0'
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.daimajia.numberprogressbar:library:1.2@aar'
     compile 'cn.finalteam:galleryfinal:1.4.8.7'

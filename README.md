@@ -33,6 +33,16 @@ HostApp.showToast('我是消息提示框');
 <button onclick="HostApp.showToast('我是消息提示框');">测试</button>
 ```
 
+##版本2.7之后新增方法（12-06更新）
+- **打开指定的App**
+``` java
+openDesignatedApp(String packname);
+```
+- **打开指定的App，并传递自定义数据**
+``` java
+openDesignatedApp(String packname, String customData);
+```
+
 ##版本2.7支持的原生API列表
 - **弹出一个消息提示框**
 ``` java

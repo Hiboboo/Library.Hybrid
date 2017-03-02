@@ -128,9 +128,19 @@
         代码：<br/>
         <div>
             HostApp.openNewpage('com.zzstxx.dc.parent.actions.NewShowActivity', '这是一个新页面',
-            'http://www.baidu.com');
+            'http://www.baidu.com', true);
         </div>
-        <button onclick="HostApp.openNewpage('com.zzstxx.hybrid.actions.NewPageActivity', '这是一个新页面', 'file:///android_asset/api.html');">
+        <pre>
+            /**
+            * 打开一个新页面，同时允许设定是否要关闭当前页面
+            *
+            * @param pageClsName        要被打开的新页面类全名
+            * @param title              新页面的标题
+            * @param url                在页面中要打开的链接地址
+            * @param isCloseCurrentPage 是否要关闭当前页面
+            */
+        </pre>
+        <button onclick="HostApp.openNewpage('com.zzstxx.hybrid.actions.NewPageActivity', '这是一个新页面', 'file:///android_asset/api.html', true);">
             测试
         </button>
     </li>
@@ -159,13 +169,35 @@
     </li>
     <br/>
     <li>
+        <b>打开一个专用于带有附件上传的表单新页面</b><br/>
+        代码：<br/>
+        <div>
+            HostApp.openFormPage('这是一个带有附件上传的表单页面', 'http://iclass.zzedu.net.cn/event.jsp?do=zyShow&id=5096');
+        </div>
+        <button onclick="HostApp.openFormPage('这是一个带有附件上传的表单页面', 'http://iclass.zzedu.net.cn/event.jsp?do=zyShow&id=5096');">
+            测试
+        </button>
+    </li>
+    <br/>
+    <li>
         <b>打开带有自定义参数的新页面</b><br/>
         代码：<br/>
         <div>
             HostApp.openNewpage('com.zzstxx.dc.parent.actions.NewShowActivity', '这是一个带有自定义参数的新页面',
-            'http://www.baidu.com', '这是自定义参数');
+            'http://www.baidu.com', '这是自定义参数', false);
         </div>
-        <button onclick="HostApp.openNewpage('com.zzstxx.hybrid.actions.NewPageActivity', '这是一个带有自定义参数的新页面', 'file:///android_asset/api.html', '这是自定义参数');">
+        <pre>
+            /**
+            * 打开一个新页面，同时允许设定是否要关闭当前页面
+            *
+            * @param pageClsName        要被打开的新页面类全名
+            * @param title              新页面的标题
+            * @param url                在页面中要打开的链接地址
+            * @param params             自定义的参数
+            * @param isCloseCurrentPage 是否要关闭当前页面
+            */
+        </pre>
+        <button onclick="HostApp.openNewpage('com.zzstxx.hybrid.actions.NewPageActivity', '这是一个带有自定义参数的新页面', 'file:///android_asset/api.html', '这是自定义参数', false);">
             测试
         </button>
     </li>
@@ -306,12 +338,11 @@
         </div>
         <button onclick="HostApp.uploadFiles(function uploadFile(response){
             HostApp.showToast(response);
-        }, true, '正在上传表单文件，稍后..', 'http://192.168.0.66/mobile/repair/uploadfile.json',
-        '{id:fecedea5-8a91-4cc8-8233-3af0bad3f021,userid:8a8085374d961134014d961ddced0024,username:3,unitid:402880b74e7def79014e7f448658001c,userAccount:3,truename:刘荟,code:103632,clienttype:3}',
-        '/storage/emulated/0/zzstxx/teacher/photos/IMG20160930091503.jpg');">
+        }, true, '正在上传表单文件，稍后..', 'http://192.168.1.220:8090/mobile/yz/upload.json',
+        '{ywid:4028815c5938de15015938f06f620016}',
+        '/storage/emulated/0/Customize/Wallpapers/43351.jpg');">
             测试
         </button>
-        <p id="uploadresult">***********</p>
     </li>
 </ul>
 

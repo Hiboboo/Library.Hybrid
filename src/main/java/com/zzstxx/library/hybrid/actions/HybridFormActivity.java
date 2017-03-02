@@ -10,13 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.widget.Toast;
 
 import com.nbsp.materialfilepicker.ui.FilePickerActivity;
 import com.zzstxx.library.hybrid.R;
-import com.zzstxx.library.hybrid.safebridge.InjectedChromeClient;
 import com.zzstxx.library.hybrid.safebridge.JsCallback;
 import com.zzstxx.library.hybrid.util.ActivityManager;
 import com.zzstxx.library.hybrid.util.HostJsScope;
@@ -63,7 +60,7 @@ public class HybridFormActivity extends AppCompatActivity
         mWebView = (ProgressWebView) this.findViewById(R.id.webview);
         String title = getIntent().getStringExtra(HostJsScope.ExtraKey.KEY_TOOLBAR_TITLE);
         mActionbar.setTitle(title);
-        HybridFormActivityPermissionsDispatcher.doExternalStorageNeedsPermissionWithCheck(this);
+        HybridFormActivityPermissionsDispatcher.doCameraAndStorageNeedsPermissionWithCheck(this);
     }
 
     @Override
@@ -73,8 +70,11 @@ public class HybridFormActivity extends AppCompatActivity
         HybridFormActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
-    @NeedsPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    void doExternalStorageNeedsPermission()
+    /**
+     * 检查系统是否允许程序访问相机和文件管理器的权限
+     */
+    @NeedsPermission({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void doCameraAndStorageNeedsPermission()
     {
         String url = getIntent().getStringExtra(HostJsScope.ExtraKey.KEY_TOOLBAR_URL);
         if (url != null)
@@ -82,18 +82,18 @@ public class HybridFormActivity extends AppCompatActivity
             if (!url.startsWith("http://") && !url.startsWith("https://") && !url.startsWith("file://"))
                 url = HostJsScope.getBaseRequestUrl(mWebView).concat(url);
             mWebView.loadUrl(url);
-            mWebView.setWebViewClient(url);
+            mWebView.setWebViewClientUrl(url);
         }
     }
 
-    @OnShowRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    void onExternalStorageShowRationale(PermissionRequest request)
+    @OnShowRationale({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void onCameraAndStorageShowRationale(PermissionRequest request)
     {
         request.proceed();
     }
 
-    @OnPermissionDenied(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-    void OnExternalStoragePermissionDenied()
+    @OnPermissionDenied({Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE})
+    void OnCameraAndStoragePermissionDenied()
     {
         Toast.makeText(this, R.string.alert_permission_apply_message, Toast.LENGTH_LONG).show();
     }
@@ -106,7 +106,12 @@ public class HybridFormActivity extends AppCompatActivity
         mWebView.clearCacheCookie();
     }
 
-    private int index = 0;
+    private static JsCallback mJsCallback;
+
+    public static void setJsCallback(JsCallback jsCallback)
+    {
+        mJsCallback = jsCallback;
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -127,8 +132,8 @@ public class HybridFormActivity extends AppCompatActivity
                     json.put("path", file.getAbsolutePath());
                     photoArray.put(json);
                     String arrayJson = photoArray.toString().replaceAll(Matcher.quoteReplacement("\\"), "");
-                    new JsCallback(mWebView, InjectedChromeClient.INJECTEDNAME, index++).onClickCallback(arrayJson.replaceAll("\"", "'"));
-                } catch (JsCallback.JsCallbackException | JSONException e)
+                    mJsCallback.onClickCallback(arrayJson.replaceAll("\"", "'"));
+                } catch (JSONException | JsCallback.JsCallbackException e)
                 {
                     e.printStackTrace();
                 }

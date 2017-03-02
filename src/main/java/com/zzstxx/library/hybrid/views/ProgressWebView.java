@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.ViewGroup;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -69,6 +70,12 @@ public class ProgressWebView extends WebView
         setting.setDefaultTextEncodingName("UTF-8");
         // 设置加载进来的页面自适应手机屏幕
         setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT)
+            setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+        else
+            setting.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL);
+        setting.setUseWideViewPort(true);
+        setting.setLoadWithOverviewMode(true);
         this.setWebChromeClient(new EvWebChromeClient(InjectedChromeClient.INJECTEDNAME, HostJsScope.class));
     }
 
@@ -95,12 +102,12 @@ public class ProgressWebView extends WebView
 
     private WebViewClient mWebClicnet;
 
-    public void setWebViewClient(WebViewClient client)
+    public void setCustomWebViewClient(WebViewClient client)
     {
         mWebClicnet = client;
     }
 
-    public void setWebViewClient(String url)
+    public void setWebViewClientUrl(String url)
     {
         mWebClicnet = new EvWebViewClient(url);
         this.setWebViewClient(mWebClicnet);
@@ -183,6 +190,19 @@ public class ProgressWebView extends WebView
         public boolean shouldOverrideKeyEvent(WebView view, KeyEvent event)
         {
             view.loadUrl(requestUrl);
+            return true;
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url)
+        {
+            view.loadUrl(url);
+            return true;
+        }
+
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
+        {
             return true;
         }
     }

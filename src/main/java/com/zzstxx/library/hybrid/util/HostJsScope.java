@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.DialogFragment;
@@ -249,7 +250,21 @@ public class HostJsScope
      */
     public static void openNewpage(WebView webView, String pageClsName, String title, String url)
     {
-        openNewpage(webView, pageClsName, title, url, null);
+        openNewpage(webView, pageClsName, title, url, null, false);
+    }
+
+    /**
+     * 打开一个新页面，同时允许设定是否要关闭当前页面
+     *
+     * @param webView            浏览器对象
+     * @param pageClsName        要被打开的新页面类全名
+     * @param title              新页面的标题
+     * @param url                在页面中要打开的链接地址
+     * @param isCloseCurrentPage 是否要关闭当前页面
+     */
+    public static void openNewpage(WebView webView, String pageClsName, String title, String url, boolean isCloseCurrentPage)
+    {
+        openNewpage(webView, pageClsName, title, url, null, isCloseCurrentPage);
     }
 
     /**
@@ -337,13 +352,15 @@ public class HostJsScope
     /**
      * 打开一个带有自定义参数的新页面
      *
-     * @param webView     浏览器对象
-     * @param pageClsName 要被打开的新页面类全名
-     * @param title       新页面标题
-     * @param url         在页面中要打开的链接地址
-     * @param params      自定义的参数
+     * @param webView            浏览器对象
+     * @param pageClsName        要被打开的新页面类全名
+     * @param title              新页面标题
+     * @param url                在页面中要打开的链接地址
+     * @param params             自定义的参数
+     * @param isCloseCurrentPage 是否关闭当前页面
      */
-    public static void openNewpage(WebView webView, String pageClsName, String title, String url, String params)
+    public static void openNewpage(WebView webView, String pageClsName,
+                                   String title, String url, String params, boolean isCloseCurrentPage)
     {
         try
         {
@@ -355,12 +372,20 @@ public class HostJsScope
             if (params != null)
                 intent.putExtra(ExtraKey.KEY_TOOLBAR_PARAMS, params);
             context.startActivity(intent);
+            if (context instanceof Activity && isCloseCurrentPage)
+                ((Activity) context).finish();
         } catch (ClassNotFoundException e)
         {
             e.printStackTrace();
         }
     }
 
+    /**
+     * 直接刷新当前页面
+     *
+     * @param webView 浏览器
+     * @param newUrl  要重新加载的新页面地址
+     */
     public static void refreshCurrentPage(WebView webView, String newUrl)
     {
         webView.loadUrl(newUrl);
@@ -386,6 +411,63 @@ public class HostJsScope
     public static void goHomePage(WebView webView)
     {
         ActivityManager.finishActivitys();
+    }
+
+    /**
+     * 打开指定的App
+     *
+     * @param webView  浏览器
+     * @param packname 应用包名
+     */
+    public static void openDesignatedApp(WebView webView, String packname)
+    {
+        openDesignatedApp(webView, packname, null);
+    }
+
+    /**
+     * 打开指定的App，并同时向其传递自定义数据
+     *
+     * @param webView    浏览器
+     * @param packname   应用包名
+     * @param customData 自定义数据
+     */
+    public static void openDesignatedApp(WebView webView, String packname, String customData)
+    {
+        Context context = webView.getContext();
+        if (isAppInstalled(context, packname))
+        {
+            Intent intent = context.getPackageManager().getLaunchIntentForPackage(packname);
+            intent.putExtra(ExtraKey.KEY_TOOLBAR_PARAMS, customData);
+            context.startActivity(intent);
+        } else
+            goToMarket(webView);
+    }
+
+    /**
+     * 检测某个应用是否安装
+     *
+     * @param context     应用上下文
+     * @param packageName 应用包名
+     * @return 如果存在，则返回{@code true}，否则返回{@code false}
+     */
+    public static boolean isAppInstalled(Context context, String packageName)
+    {
+        try
+        {
+            context.getPackageManager().getPackageInfo(packageName, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException e)
+        {
+            return false;
+        }
+    }
+
+    /**
+     * 去市场下载页面
+     */
+    public static void goToMarket(WebView webView)
+    {
+        openNotclsNewpage(webView, "郑州教育移动客户端", "http://sjkhd.zzedu.net.cn");
     }
 
     /**
@@ -629,6 +711,7 @@ public class HostJsScope
         Context context = webView.getContext();
         if (context != null && context instanceof Activity)
         {
+            HybridFormActivity.setJsCallback(jsCallback);
             new MaterialFilePicker()
                     .withActivity((Activity) context)
                     .withRequestCode(REQUEST_FILEPICKER_CODE)
@@ -705,7 +788,7 @@ public class HostJsScope
                     {
                         if (mProgressDialog.isShowing())
                             mProgressDialog.dismiss();
-                        mJsCallback.onClickCallback(response);
+                        mJsCallback.onClickCallback(response.replaceAll("\"", "'"));
                     } catch (JsCallback.JsCallbackException e1)
                     {
                         e1.printStackTrace();
